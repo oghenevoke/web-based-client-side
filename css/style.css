@@ -1,0 +1,29 @@
+* {
+    font-family: 'Inter', sans-serif;
+}
+
+.fs-14{
+    font-size: 14px;
+}
+
+.fs-18{
+    font-size: 18px;
+}
+
+.mt-70{
+    margin-top: 70px;
+}
+
+.disabled{
+    background-color: #f8f8f8;
+}
+
+.card-width {
+    width: 18rem;
+}
+
+@media screen and (max-width: 1200px) {
+    .card-width{
+        width: 15rem;
+    }
+}

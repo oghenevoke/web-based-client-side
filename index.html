@@ -38,7 +38,7 @@
                 <div class="container-fluid">
                     <div class="navbar-header">
                         <!--<a class="navbar-brand text-dark" href="#">E-Learning</a>-->
-                        <select v-model="sorting" align="left">
+                        <select v-model="sortBy" align="left">
                             <option disabled value="">Sort by</option>
                             <option value="price">Price</option>
                             <option value="location">Location</option>
@@ -46,7 +46,7 @@
                             <option value="space">Availability</option>
                         </select>
 
-                        <select v-model="order" align="left">
+                        <select v-model="orderBy" align="left">
                             <option disabled value=""><i class="fa-solid fa-arrow-up-a-z"></i>Order in</option>
                             <option value="ascending">Ascending</option>
                             <option value="descending">Descending</option>
@@ -78,7 +78,7 @@
             <!--if home page is true -->
                 <div class="row classes" v-if="HomePage">
                     <!-- to call classes.js-->
-                    <div class="card" style="width:270px;" v-for="lecture in classes" :key="lecture.id">
+                    <div class="card ml-2" style="width:270px;" v-for="lecture in classes" :key="lecture.id">
                         <img v-bind:src="lecture.image" style="width:268px; height:200px;" >
                         <div class="card-body">
                             <i v-bind:class="lecture.fontAwesomeIcon" class="fa-3x"></i><br />

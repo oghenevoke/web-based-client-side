@@ -2,31 +2,31 @@ const app = new Vue({
     el: '#eLearingApp',
     data: {
         classes: [],
-        cart: [], 
-        sorting: "", //this is to sort by price, subject, location or availability/spaces
-        order: "", // to order in ascending or descending order
+        cart: [],
+        sortBy: "", //this is to sort by price, subject, location or availability/spaces
+        orderBy: "", // to order in ascending or descending order
         search: "",// to search by subject and location
-        name: "", 
+        name: "",
         phoneNumber: "",
         HomePage: true,
         disabled: [true, true],
         baseURL: 'http://localhost:4000'
     },
-    created: function(){
+    created: function () {
         // fetch lessons from API on application launch
         this.fetchLessons();
     },
     computed: {
-        
+
         //shows the number of items(spaces) of each subject being added to cart
-        cartItemCount: function() {
+        cartItemCount: function () {
             return this.cart.length || '';
         },
     },
 
     methods: {
         // method to fetch lessons from API
-        fetchLessons(){
+        fetchLessons() {
             fetch(`${this.baseURL}/collections/lessons`).then(
                 function (response) {
                     response.json().then(
@@ -38,7 +38,7 @@ const app = new Vue({
                 });
         },
         // search lesson
-        searchLessonsCollection(searchText){
+        searchLessonsCollection(searchText) {
             fetch(`${this.baseURL}/collections/lessons/find/${searchText}`).then(
                 function (response) {
                     response.json().then(
@@ -88,42 +88,42 @@ const app = new Vue({
             return lecture.spaces > 0;
         },
         //adds or pushes items to cart
-        addToCart (lecture) {
+        addToCart(lecture) {
 
             --lecture.spaces;
             var lectureInCart = this.cart.find(u => u.lessonId == lecture._id);
             console.log(lectureInCart);
 
-            if(lectureInCart != null){
+            if (lectureInCart != null) {
                 ++lectureInCart.spaces;
-            }else{
-                lectureInCart = { lessonId: lecture._id, spaces: 1, lecture: lecture};
+            } else {
+                lectureInCart = { lessonId: lecture._id, spaces: 1, lecture: lecture };
                 this.cart.push(lectureInCart);
             }
             console.log(this.cart)
         },
         //this is just saying they are equal to each other and whenever this method is used to toggle's to homepage when not and homepage and when not on home page to the check out page
-        togglePage(){
+        togglePage() {
             this.HomePage = !this.HomePage;
         },
         //removes items from cart and adds back the number of space
-        removeFromCart(lessonId){
+        removeFromCart(lessonId) {
             var itemInCart = this.cart.find(u => u.lessonId == lessonId);
-            if(itemInCart.spaces == 1){
+            if (itemInCart.spaces == 1) {
                 var index = this.cart.map(x => x.lessonId).indexOf(lessonId);
                 this.cart.splice(index, 1);
-    
+
                 //when the cart is empty goes back to home page
-                if(this.cart.length <= 0){
+                if (this.cart.length <= 0) {
                     this.togglePage();
                 }
-            }else{
+            } else {
                 --itemInCart.spaces;
             }
 
             var lecture = this.classes.find(u => u._id == lessonId);
             ++lecture.spaces;
-           
+
         },
 
         orderMessage() {
@@ -131,7 +131,7 @@ const app = new Vue({
 
             // insert and save new order
             this.cart.forEach((itemInCart) => {
-                
+
                 var order = {
                     lessonId: itemInCart.lessonId,
                     spaces: itemInCart.spaces,
@@ -142,46 +142,141 @@ const app = new Vue({
 
                 // update available lesson space with put
                 var lessonToUpdate = { spaces: itemInCart.lecture.spaces }
-                this.updateLesson( lessonToUpdate, itemInCart.lessonId);
+                this.updateLesson(lessonToUpdate, itemInCart.lessonId);
             });
 
 
             alert("Your Order has been successfully taken");
             window.location.reload();
-          },
+        },
 
         isLetter(e) {
             const nameField = document.getElementById("name");
             let char = String.fromCharCode(e.keyCode);// Gets the character
-            if(/^[A-Za-z]+$/.test(char)) {
+            if (/^[A-Za-z]+$/.test(char)) {
                 nameField.style.border = "green solid 3px";
                 this.disabled = [false, this.disabled[1]]
-            } 
-            else{
+            }
+            else {
                 nameField.style.border = "red solid 3px";
                 this.disabled = [true, this.disabled[1]]
-            } 
-            
-          },
+            }
+
+        },
 
         isNumber(e) {
             const phoneNumberField = document.getElementById("phoneNumber");
             let char = String.fromCharCode(e.keyCode); // Gets the character
-            if(/^[0-9]+$/.test(char)){
+            if (/^[0-9]+$/.test(char)) {
                 phoneNumberField.style.border = "green solid 3px";
                 this.disabled = [this.disabled[0], false]
-            } 
-            else{
+            }
+            else {
                 phoneNumberField.style.border = "red solid 3px";
                 this.disabled = [this.disabled[0], true]
             }
-            
-          }, 
+
+        },
+        // filter lesson based on sortBy selection
+        sortClasses: function () {
+            if (this.orderBy == 'ascending') {
+                switch (this.sortBy) {
+                    // filter by subject
+                    case 'subject':
+                        this.classes.sort((a, b) => {
+                            let x = a.subject.toLowerCase();
+                            let y = b.subject.toLowerCase();
+                            if (x < y) { return -1; }
+                            if (x > y) { return 1; }
+                            return 0;
+                        })
+                        break;
+                    // filter by location
+                    case 'location':
+                        this.classes.sort((a, b) => {
+                            let x = a.location.toLowerCase();
+                            let y = b.location.toLowerCase();
+                            if (x < y) { return -1; }
+                            if (x > y) { return 1; }
+                            return 0;
+                        })
+                        break;
+                    // filter by price
+                    case 'price':
+                        this.classes.sort((a, b) => {
+                            let x = a.price;
+                            let y = b.price;
+                            if (x < y) { return -1; }
+                            if (x > y) { return 1; }
+                            return 0;
+                        })
+                        break;
+                    // filter by availability
+                    case 'availability':
+                        this.classes.sort((a, b) => {
+                            let x = a.spaces;
+                            let y = b.spaces;
+                            if (x < y) { return -1; }
+                            if (x > y) { return 1; }
+                            return 0;
+                        })
+                        break;
+                }
+            } else {
+                switch (this.sortBy) {
+                    // filter by subject
+                    case 'subject':
+                        this.classes.sort((a, b) => {
+                            let x = a.subject.toLowerCase();
+                            let y = b.subject.toLowerCase();
+                            if (x < y) { return 1; }
+                            if (x > y) { return -1; }
+                            return 0;
+                        })
+                        break;
+                    // filter by location
+                    case 'location':
+                        this.classes.sort((a, b) => {
+                            let x = a.location.toLowerCase();
+                            let y = b.location.toLowerCase();
+                            if (x < y) { return 1; }
+                            if (x > y) { return -1; }
+                            return 0;
+                        })
+                        break;
+                    // filter by price
+                    case 'price':
+                        this.classes.sort((a, b) => {
+                            let x = a.price;
+                            let y = b.price;
+                            if (x < y) { return 1; }
+                            if (x > y) { return -1; }
+                            return 0;
+                        })
+                        break;
+                    // filter by availability
+                    case 'availability':
+                        this.classes.sort((a, b) => {
+                            let x = a.spaces;
+                            let y = b.spaces;
+                            if (x < y) { return 1; }
+                            if (x > y) { return -1; }
+                            return 0;
+                        })
+                        break;
+                }
+            }
+        },
 
     },
 
     watch: {
-        
+        sortBy: function () {
+            this.sortClasses();
+        },
+        orderBy: function () {
+            this.sortClasses()
+        },
         search: {
             handler(val) {
                 console.log(val)

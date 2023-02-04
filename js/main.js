@@ -9,76 +9,15 @@ const app = new Vue({
         name: "", 
         phoneNumber: "",
         HomePage: true,
-        disabled: [true, true]
+        disabled: [true, true],
+        baseURL: 'http://localhost:4000'
     },
-
+    created: function(){
+        // fetch lessons from API on application launch
+        this.fetchLessons();
+    },
     computed: {
-        //searches by subject and location
-        searchSortLecture: function(){
-            tempLecture = this.classes;
-            
-            if(this.search != "" && this.search){
-                tempLecture = tempLecture.filter((lecture) => {
-                    return(lecture.subject.toLowerCase().match(this.search.toLowerCase()) || lecture.location.toLowerCase().match(this.search.toLowerCase()));
-                })
-            }
-            
-            tempLecture = tempLecture.sort((a, b) => {
-                if(this.order == "ascending"){
-                    if (this.sorting == "subject"){
-                        if (a.subject.toLowerCase() < b.subject.toLowerCase()){
-                            return -1
-                        }
-                        if (a.subject.toLowerCase() > b.subject.toLowerCase()){
-                            return 1
-                        }
-                        return 0
-                    }
-                    if (this.sorting == "location"){
-                        if (a.location.toLowerCase() < b.location.toLowerCase()){
-                            return -1
-                        }
-                        if (a.location.toLowerCase() > b.location.toLowerCase()){
-                            return 1
-                        }
-                        return 0
-                    }
-                    if(this.sorting == "price"){
-                        return a.price - b.price;
-                    }
-                    if (this.sorting == "space"){
-                        return a.spaces - a.cartItemCount - (b.spaces - b.cartItemCount);
-                    }
-                }else if(this.order == "descending"){
-                    if (this.sorting == "subject"){
-                        if (a.subject.toLowerCase() < b.subject.toLowerCase()){
-                            return 1
-                        }
-                        if (a.subject.toLowerCase() > b.subject.toLowerCase()){
-                            return -1
-                        }
-                        return 0
-                    }
-                    if (this.sorting == "location"){
-                        if (a.location.toLowerCase() < b.location.toLowerCase()){
-                            return 1
-                        }
-                        if (a.location.toLowerCase() > b.location.toLowerCase()){
-                            return -1
-                        }
-                        return 0
-                    }
-                    if(this.sorting == "price"){
-                        return b.price - a.price;
-                    }
-                    if (this.sorting == "space"){
-                            return b.spaces - b.cartItemCount - (a.spaces - a.cartItemCount);         
-                    }
-                }
-            });
-            
-            return tempLecture;
-        },
+        
         //shows the number of items(spaces) of each subject being added to cart
         cartItemCount: function() {
             return this.cart.length || '';
@@ -86,41 +25,127 @@ const app = new Vue({
     },
 
     methods: {
+        // method to fetch lessons from API
+        fetchLessons(){
+            fetch(`${this.baseURL}/collections/lessons`).then(
+                function (response) {
+                    response.json().then(
+                        function (json) {
+                            // pushing lessons in json format into the lessons array
+                            app.classes = json;
+                        }
+                    )
+                });
+        },
+        // search lesson
+        searchLessonsCollection(searchText){
+            fetch(`${this.baseURL}/collections/lessons/find/${searchText}`).then(
+                function (response) {
+                    response.json().then(
+                        function (json) {
+                            // pushing lessons in json format into the lessons array
+                            app.classes = json;
+                        }
+                    )
+                });
+        },
+        ///  save Order with POST
+        postOrder(jsonData) {
+            fetch(`${this.baseURL}/collections/orders`, {
+                method: "POST",
+                body: JSON.stringify(jsonData),
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            }).then(response => response.json())
+                .then(responseData => {
+                    console.log(responseData);
+                })
+                .catch(error => {
+                    console.log(error);
+                });
+        },
+        /// update lesson space
+        updateLesson(jsonData, _id) {
+
+            fetch(`${this.baseURL}/collections/lessons/${_id}`, {
+                method: "PUT",
+                body: JSON.stringify(jsonData),
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            }).then(response => response.json())
+                .then(responseData => {
+                    console.log(responseData);
+                })
+                .catch(error => {
+                    console.log(error);
+                });
+        },
+
         //returns number of spaces greater than cartCount(lecture) boolean data type
         canAddToCart(lecture) {
-            return lecture.spaces > this.cartCount(lecture);
+            return lecture.spaces > 0;
         },
         //adds or pushes items to cart
         addToCart (lecture) {
-            this.cart.push(lecture);
-            // console.log(lecture.id)
+
+            --lecture.spaces;
+            var lectureInCart = this.cart.find(u => u.lessonId == lecture._id);
+            console.log(lectureInCart);
+
+            if(lectureInCart != null){
+                ++lectureInCart.spaces;
+            }else{
+                lectureInCart = { lessonId: lecture._id, spaces: 1, lecture: lecture};
+                this.cart.push(lectureInCart);
+            }
+            console.log(this.cart)
         },
-        //counting the number of items(spaces) being added to cart
-        cartCount(lecture) {
-            let count = 0;
-                for(var i = 0; i < this.cart.length; i++) {                        
-                    if (this.cart[i] === lecture) {
-                        count++;
-                    }
-                }
-            return count;
-          },
-    
         //this is just saying they are equal to each other and whenever this method is used to toggle's to homepage when not and homepage and when not on home page to the check out page
         togglePage(){
             this.HomePage = !this.HomePage;
         },
         //removes items from cart and adds back the number of space
-        removeFromCart(){
-            this.cart.splice(this.cart.lecture, 1);
-
-            //when the cart is empty goes back to home page
-            if(this.cart.length <= 0){
-                this.togglePage();
+        removeFromCart(lessonId){
+            var itemInCart = this.cart.find(u => u.lessonId == lessonId);
+            if(itemInCart.spaces == 1){
+                var index = this.cart.map(x => x.lessonId).indexOf(lessonId);
+                this.cart.splice(index, 1);
+    
+                //when the cart is empty goes back to home page
+                if(this.cart.length <= 0){
+                    this.togglePage();
+                }
+            }else{
+                --itemInCart.spaces;
             }
+
+            var lecture = this.classes.find(u => u._id == lessonId);
+            ++lecture.spaces;
+           
         },
 
         orderMessage() {
+            console.log(this.cart);
+
+            // insert and save new order
+            this.cart.forEach((itemInCart) => {
+                
+                var order = {
+                    lessonId: itemInCart.lessonId,
+                    spaces: itemInCart.spaces,
+                    name: this.name,
+                    phoneNumber: this.phoneNumber
+                };
+                this.postOrder(order);
+
+                // update available lesson space with put
+                var lessonToUpdate = { spaces: itemInCart.lecture.spaces }
+                this.updateLesson( lessonToUpdate, itemInCart.lessonId);
+            });
+
+
             alert("Your Order has been successfully taken");
             window.location.reload();
           },
@@ -154,4 +179,18 @@ const app = new Vue({
           }, 
 
     },
+
+    watch: {
+        
+        search: {
+            handler(val) {
+                console.log(val)
+                if (val.trim() != '') {
+                    this.searchLessonsCollection(val);
+                } else {
+                    this.fetchLessons();
+                }
+            },
+        }
+    }
 });

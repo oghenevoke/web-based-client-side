@@ -13,7 +13,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
     <script src="https://unpkg.com/vue@2.7.8/dist/vue.js"></script>
-    <title>Web-based mobile app development course work 1</title>
+    <title>Web-based mobile app development course work 2</title>
 </head>
 <body>
     <div id="eLearingApp">
@@ -78,16 +78,16 @@
             <!--if home page is true -->
                 <div class="row classes" v-if="HomePage">
                     <!-- to call classes.js-->
-                    <div class="card" style="width:270px;" v-for="lecture in searchSortLecture" :key="lecture.id">
-                        <img v-bind:src="lecture.image" style="width:268px; height:200px;">
+                    <div class="card" style="width:270px;" v-for="lecture in classes" :key="lecture.id">
+                        <img v-bind:src="lecture.image" style="width:268px; height:200px;" >
                         <div class="card-body">
                             <i v-bind:class="lecture.fontAwesomeIcon" class="fa-3x"></i><br />
                             <h4 align="left">Subject: <b v-text="lecture.subject"></b></h4>
                             <p align="left">Location: <b v-text="lecture.location"></b></p>
                             <p align="left">Price: <b class="price">£{{ lecture.price }}</b></p>
-                            <p align="left">Spaces: <b v-text="lecture.spaces - cartCount(lecture)"></b></p><!--the number of spaces reduces when an item is added to cart-->
+                            <p align="left">Spaces: <b v-text="lecture.spaces"></b></p><!--the number of spaces reduces when an item is added to cart-->
                             <span class="message"
-                                v-if="lecture.spaces - cartCount(lecture) === 0">      
+                                v-if="lecture.spaces === 0">      
                                 Fully booked!
                             </span>
                             <span class="message"
@@ -98,7 +98,7 @@
 
                         <!-- adding the add to cart button-->
                         <!--if there is still any space available button is enabled -->
-                        <button class="btn btn-info text-light btn-lg" v-on:click="addToCart(lecture)" v-if="canAddToCart(lecture)">
+                        <button type="button" class="btn btn-info text-light btn-lg" v-on:click="addToCart(lecture)" v-if="canAddToCart(lecture)">
                             Add to cart
                         </button>
 
@@ -115,17 +115,17 @@
             <div class="row classes" v-else>
                 <!-- to call classes.js-->
                 <div class="card" style="width:270px;" v-for="lecture in cart">
-                    <img v-bind:src="lecture.image" style="width:268px; height:200px;">
+                    <img v-bind:src="lecture.lecture.image" style="width:268px; height:200px;">
                     <div class="card-body">
-                        <i v-bind:class="lecture.fontAwesomeIcon" class="fa-3x"></i><br />
-                        <h4 align="left">Subject: <b v-text="lecture.subject"></b></h4>
-                        <p align="left">Location: <b v-text="lecture.location"></b></p>
-                        <!--<p>Spaces: <b v-text="lecture.spaces - cartCount(lecture)"></b></p>-->
-                        <p align="left">Price: <b class="price">£{{ lecture.price }}</b></p>
+                        <i v-bind:class="lecture.lecture.fontAwesomeIcon" class="fa-3x"></i><br />
+                        <h4 align="left">Subject: <b v-text="lecture.lecture.subject"></b></h4>
+                        <p align="left">Location: <b v-text="lecture.lecture.location"></b></p>
+                        <p align="left">Item in cart: <b v-text="lecture.spaces"></b></p>
+                        <p align="left">Price: <b class="price">£{{ lecture.lecture.price }}</b></p>
                     </div>
 
                     <!-- to call the removeFromCart() method which would remove the items from the cart when the button is clicked on-->
-                    <button class="btn btn-secondary btn-lg" v-on:click="removeFromCart(lecture.id)">
+                    <button class="btn btn-secondary btn-lg" v-on:click="removeFromCart(lecture.lessonId)">
                         Remove from cart
                     </button>  
                 </div>
@@ -160,10 +160,7 @@
 
         </main>
     </div>
-                
 
-
-    <script src="js/classes.js"></script>
     <script src="js/main.js"></script>
 </body>
 </html>

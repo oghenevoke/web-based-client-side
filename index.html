@@ -79,7 +79,7 @@
                 <div class="row classes" v-if="HomePage">
                     <!-- to call classes.js-->
                     <div class="card ml-2" style="width:270px;" v-for="lecture in classes" :key="lecture.id">
-                        <img v-bind:src="lecture.image" style="width:268px; height:200px;" >
+                        <img v-bind:src="baseURL + '/' + lecture.image" style="width:268px; height:200px;" >
                         <div class="card-body">
                             <i v-bind:class="lecture.fontAwesomeIcon" class="fa-3x"></i><br />
                             <h4 align="left">Subject: <b v-text="lecture.subject"></b></h4>
@@ -115,7 +115,7 @@
             <div class="row classes" v-else>
                 <!-- to call classes.js-->
                 <div class="card" style="width:270px;" v-for="lecture in cart">
-                    <img v-bind:src="lecture.lecture.image" style="width:268px; height:200px;">
+                    <img v-bind:src="baseURL + '/' + lecture.lecture.image" style="width:268px; height:200px;">
                     <div class="card-body">
                         <i v-bind:class="lecture.lecture.fontAwesomeIcon" class="fa-3x"></i><br />
                         <h4 align="left">Subject: <b v-text="lecture.lecture.subject"></b></h4>

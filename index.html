@@ -1,201 +1,169 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- google fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600" rel="stylesheet">
-    <!-- fontawesome icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
-    <!-- style -->
-    <link rel="stylesheet" href="css/style.css">
-    <!-- bootstrap -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"
-        integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
-    <!-- vue -->
+    <link rel="stylesheet" href="css/style.css" id="theme-stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" 
+        integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A==" 
+        crossorigin="anonymous" 
+        referrerpolicy="no-referrer" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
     <script src="https://unpkg.com/vue@2.7.8/dist/vue.js"></script>
-    <title>Index</title>
+    <title>Web-based mobile app development course work 1</title>
 </head>
-
 <body>
-    <div class="container py-5 px-md-5" id="app">
-        <!-- home -->
-        <div v-if="onHomePage">
-            <p class="text-center">Home</p>
-            <hr>
-            <div class="row justify-content-center pt-3">
-                <div class="col-md-6">
-                    <input type="text" class="form-control" placeholder="Search.." v-model="search">
-                  </div>
-            </div>
-            <!-- main -->
-            <div class="row pt-2">
-                <!-- sort section -->
-                <div class="col-md-3 col-lg-2 card rounded-0 pt-4 mt-2 fs-14">
+    <div id="eLearingApp">
+        <header class="header">
+            <nav class="navbar navbar-expand-lg navbar-dark py-4 shadow-sm bg-info" style=" height: 80px;">
+                <div class="container-fluid">
+                    <div class="navbar-header">
+                        <a class="navbar-brand text-light" href="#"><img src="images/logo.png" alt="" width="120" height="120"></a>
+                    </div>
 
-                    <b class="pb-2">Sort by: {{ sortBy }}</b>
-                    <!-- main sorting attributes -->
-                    <div class="form-check">
-                        <label class="form-check-label">
-                            <input type="radio" class="form-check-input" v-model="sortBy" value="subject">Subject
-                        </label>
-                    </div>
-                    <div class="form-check">
-                        <label class="form-check-label">
-                            <input type="radio" class="form-check-input" v-model="sortBy" value="location">Location
-                        </label>
-                    </div>
-                    <div class="form-check">
-                        <label class="form-check-label">
-                            <input type="radio" class="form-check-input" v-model="sortBy" value="price">Price
-                        </label>
-                    </div>
-                    <div class="form-check">
-                        <label class="form-check-label">
-                            <input type="radio" class="form-check-input" v-model="sortBy"
-                                value="availability">Availability
-                        </label>
-                    </div>
-                    <hr>
-                    <b class="pb-2">Order by:</b>
-                    <!-- additional sorting -->
-                    <div class="form-check">
-                        <label class="form-check-label">
-                            <input type="radio" class="form-check-input" v-model="orderBy" value="ascending">Ascending
-                            order
-                        </label>
-                    </div>
-                    <div class="form-check">
-                        <label class="form-check-label">
-                            <input type="radio" class="form-check-input" v-model="orderBy" value="descending">Descending
-                            order
-                        </label>
-                    </div>
-                </div>
-                <!-- lessons -->
-                <div class="col-md-9 col-lg-10">
-                    <div class="row ">
-                        <div class="col-sm-6 col-md-6 col-lg-4 mt-2" v-for="lesson in filteredLessonList">
-                            <div class="card card-width rounded-0 shadow-sm">
-                                <div class="card-body d-flex justify-content-between ">
-
-                                    <div>
-                                        <span class="card-text fs-14">Subject: <b
-                                                class="card-subtitle mb-2 fs-14">{{lesson.topic}}</b></span><br>
-                                        <span class="card-text fs-14">Location: <b
-                                                class="card-subtitle mb-2 fs-14">{{lesson.location}}</b></span><br>
-                                        <span class="card-text fs-14">Price: <b
-                                                class="card-subtitle mb-2 fs-14">£{{lesson.price}}</b></span><br>
-                                        <span class="card-text fs-14">Spaces: <b
-                                                class="card-subtitle mb-2 fs-14">{{lesson.spaces}}</b></span><br>
-                                        <span class="card-text fs-18"><i v-bind:class="lesson.icon"></i></span><br>
-
-                                        <button v-bind:class="{disabled: lesson.spaces <= 0}"
-                                            @click="addToCart(lesson.id)"
-                                            class="card-link btn btn-dark btn-sm mt-md-5 px-lg-2"> <i
-                                                class="fas fa-plus mx-1"></i> <span class="d-xl-none">Add</span>
-                                            <span class="d-none d-xl-inline">Add to cart</span> </button>
-                                    </div>
-                                    <img v-bind:src="baseURL + '/' + lesson.imageURL" v-bind:alt="lesson.altText"
-                                        class="img-fluid border rounded"
-                                        style="height: 202px; width: 120px; object-fit: cover">
-
-                                </div>
+                    <div class="p-3 shadow-sm index-forward border-top" id="search">
+                        <form class="navbar-form navbar-left">
+                            <div class="input-group">
+                            <input type="text" class="form-control" placeholder="Search" name="search" v-model="search">
                             </div>
+                        </form>
+                    </div>
+
+                </div>
+            </nav>
+            <nav class="navbar navbar-expand-lg navbar-dark py-0 shadow-sm bg-dark" style="height: 45px ;">
+                <div class="container-fluid">
+                    <div class="navbar-header">
+                        <!--<a class="navbar-brand text-dark" href="#">E-Learning</a>-->
+                        <select v-model="sorting" align="left">
+                            <option disabled value="">Sort by</option>
+                            <option value="price">Price</option>
+                            <option value="location">Location</option>
+                            <option value="subject">Subject</option>
+                            <option value="space">Availability</option>
+                        </select>
+
+                        <select v-model="order" align="left">
+                            <option disabled value=""><i class="fa-solid fa-arrow-up-a-z"></i>Order in</option>
+                            <option value="ascending">Ascending</option>
+                            <option value="descending">Descending</option>
+                        </select><br />
+                    </div>
+                
+                <ul class="nav navbar-nav">
+                    <!-- if the item in the cart is more than 0 the button is enabled and clickable-->
+                    <li v-if="this.cart.length > 0">
+                        <!-- when clicked on displays the cart item -->
+                        <button v-on:click="togglePage" class="btn-light">
+                            <!--showing the number of lessons being added to cart-->
+                            {{cartItemCount}} 
+                        <i class="fa-solid fa-cart-shopping"></i>  Cart
+                        </button>
+                    </li>
+                    <li v-else>
+                        <!-- if the item in the cart is less than 0 the button is disabled-->
+                        <button disabled="true" class="btn-light">
+                        <i class="fa-solid fa-cart-shopping"></i>  Cart
+                        </button>
+                    </li>
+                </ul>
+                </div>
+            </nav>
+        </header>
+          <br><br>
+        <main class="container" style="text-align:center;">
+            <!--if home page is true -->
+                <div class="row classes" v-if="HomePage">
+                    <!-- to call classes.js-->
+                    <div class="card" style="width:270px;" v-for="lecture in searchSortLecture" :key="lecture.id">
+                        <img v-bind:src="lecture.image" style="width:268px; height:200px;">
+                        <div class="card-body">
+                            <i v-bind:class="lecture.fontAwesomeIcon" class="fa-3x"></i><br />
+                            <h4 align="left">Subject: <b v-text="lecture.subject"></b></h4>
+                            <p align="left">Location: <b v-text="lecture.location"></b></p>
+                            <p align="left">Price: <b class="price">£{{ lecture.price }}</b></p>
+                            <p align="left">Spaces: <b v-text="lecture.spaces - cartCount(lecture)"></b></p><!--the number of spaces reduces when an item is added to cart-->
+                            <span class="message"
+                                v-if="lecture.spaces - cartCount(lecture) === 0">      
+                                Fully booked!
+                            </span>
+                            <span class="message"
+                                v-else>Book a lesson with us today!
+                            </span>
+                        
                         </div>
 
+                        <!-- adding the add to cart button-->
+                        <!--if there is still any space available button is enabled -->
+                        <button class="btn btn-info text-light btn-lg" v-on:click="addToCart(lecture)" v-if="canAddToCart(lecture)">
+                            Add to cart
+                        </button>
+
+                        <!--if the number of spaces is = 0 the button is disabled -->
+                        <button disabled="true" class="btn btn-secondary btn-lg" v-else>
+                            Add to cart
+                        </button>
+                        <br>   
+                    </div> 
+                </div>
+   
+
+            <!--if home page is false toggle's to checkout page-->
+            <div class="row classes" v-else>
+                <!-- to call classes.js-->
+                <div class="card" style="width:270px;" v-for="lecture in cart">
+                    <img v-bind:src="lecture.image" style="width:268px; height:200px;">
+                    <div class="card-body">
+                        <i v-bind:class="lecture.fontAwesomeIcon" class="fa-3x"></i><br />
+                        <h4 align="left">Subject: <b v-text="lecture.subject"></b></h4>
+                        <p align="left">Location: <b v-text="lecture.location"></b></p>
+                        <!--<p>Spaces: <b v-text="lecture.spaces - cartCount(lecture)"></b></p>-->
+                        <p align="left">Price: <b class="price">£{{ lecture.price }}</b></p>
                     </div>
+
+                    <!-- to call the removeFromCart() method which would remove the items from the cart when the button is clicked on-->
+                    <button class="btn btn-secondary btn-lg" v-on:click="removeFromCart(lecture.id)">
+                        Remove from cart
+                    </button>  
                 </div>
-            </div>
-            <!-- nav toggle button -->
-            <div class="row mt-5 text-center">
-                <div class="col-12 ">
-                    <button v-if="disableCartButton" class="disabled card-link btn btn-dark btn-sm px-3"><i
-                            class="fas fa-arrow-right mx-2"></i>Go
-                        to cart</button>
-                    <button v-else v-on:click="togglePage" class="card-link btn btn-dark btn-sm px-3"><i
-                            class="fas fa-arrow-right mx-2"></i>Go
-                        to cart</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- cart -->
-        <div v-else>
-            <p class="text-center"><span v-on:click="togglePage" style="text-decoration: none">Home</span> <i
-                    class="fas fa-arrow-right"></i>
-                <span class="mb-2 text-dark">Cart <i class="fas fa-shopping-cart"></i> </span></p>
-            <hr>
-            <div class="row">
-                <div class="col-sm-6 col-md-6 col-lg-4 mt-2" v-for="item in cart">
-                    <div class="card card-width rounded-0 shadow-sm">
-                        <div class="card-body d-flex justify-content-between ">
-
-                            <div>
-                                <span class="card-text fs-14">Subject: <b
-                                        class="card-subtitle mb-2 fs-14">{{item.lesson.topic}}</b></span><br>
-                                <span class="card-text fs-14">Location: <b
-                                        class="card-subtitle mb-2 fs-14">{{item.lesson.location}}</b></span><br>
-                                <span class="card-text fs-14">Price: <b
-                                        class="card-subtitle mb-2 fs-14">£{{item.lesson.price}}</b></span><br>
-                                <span class="card-text fs-14">Spaces: <b
-                                        class="card-subtitle mb-2 fs-14">{{item.spaces}}</b></span><br>
-                                <span class="card-text fs-18"><i v-bind:class="item.lesson.icon"></i></span><br>
-
-                                <button @click="removeFromCart(item.lessonId)"
-                                    class="card-link btn btn-dark btn-sm mt-md-5 px-lg-2">
-                                    <i class="fas fa-minus mx-1"></i> Remove </button>
-                            </div>
-                            <img v-bind:src="baseURL + '/' + item.lesson.imageURL" v-bind:alt="item.lesson.altText"
-                                class="img-fluid border rounded" style="height: 202px; width: 120px; object-fit: cover">
-
+            <br /><br /><br /><br />
+                <div style="text-align: center; padding-left: 20px; padding-right: 20px; padding-top: 100px;" class="checkout">
+                    <div class="form-group">
+                        <div class="card bg-dark text-light" style="width: 1050px;">
+                            <h2>
+                                <strong>CHECK OUT</strong>
+                            </h2>
                         </div>
                     </div>
-                </div>
-
-            </div>
-
-            <div class="row mt-5 text-center">
-                <div class="col-12 ">
-
-                    <button type="button" v-on:click="togglePage" class="card-link btn btn-dark btn-sm px-3"><i
-                            class="fas fa-arrow-left mx-2"></i>Go
-                        to Home</button>
-                </div>
-            </div>
-
-            <!-- checkout -->
-            <hr>
-            <p class="text-center">Checkout</p>
-            <form>
-                <div class="row justify-content-center">
-                  <div class="col-md-6 col-lg-4">
-                    <input type="text" class="form-control" placeholder="Enter name" v-model="name">
-                  </div>
-                  <div class="col-md-6 col-lg-4">
-                    <input type="number" class="form-control" placeholder="Enter phone number" v-model="phoneNumber">
-                  </div>
-                </div>
-              </form>
-            <div class="row mt-5 text-center">
-                <div class="col-12">
-                    <button v-if="enableCheckoutButton" v-on:click="showConfirmationDialog" class="card-link btn btn-dark btn-sm px-3"><i
-                        class="fas fa-check mx-2"></i>Checkout</button>
-                <button v-else class="disabled card-link btn btn-dark btn-sm px-3"><i
-                        class="fas fa-check mx-2"></i>Checkout</button>
-
+                    <form @submit.prevent>
+                        <div class="form-group">
+                            <div class="col-md-12"><strong>Name:</strong></div>
+                                <input v-model.trim="name" class="form-control" id="name" name="name" type="text" placeholder="Bxxxxxxx Exxxxxxx" v-on:keypress="isLetter($event)"/>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-md-12"><strong>Phone Number:</strong></div>
+                                <input v-model="phoneNumber" class="form-control" id="phoneNumber" name="phoneNumber" placeholder="+44 xxxxxxxxxx" v-on:keypress="isNumber($event)"/>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-md-12">
+                                <button type="submit" class="btn btn-info submit" :disabled="!disabled.every(i => i === false)" v-on:click="orderMessage">
+                                    Place Order
+                                </button>
+                            </div>
+                        </div>
+                    </form>
                 </div>
             </div>
-        </div>
 
+        </main>
     </div>
+                
 
-    <!-- scripts -->
-    <script src="js/app.js"></script>
+
+    <script src="js/classes.js"></script>
+    <script src="js/main.js"></script>
 </body>
-
 </html>

@@ -1,3 +1,2 @@
----- <b>CST3145 Individual Coursework-2</b> ----
-    <br> <br>
+WEB-BASED MOBILE APP DEVELOPMENT SECOND COURSE WORK FOR THE CLIENT SIDE (FRONT-END)
     

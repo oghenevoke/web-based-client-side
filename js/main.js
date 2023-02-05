@@ -10,7 +10,7 @@ const app = new Vue({
         phoneNumber: "",
         HomePage: true,
         disabled: [true, true],
-        baseURL: 'http://localhost:4000'
+        baseURL: 'https://lessonsapp-env.eba-eqrrgh64.eu-west-2.elasticbeanstalk.com'
     },
     created: function () {
         // fetch lessons from API on application launch
